@@ -1,0 +1,23 @@
+{
+  "name": "twitter-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ShahabAthar25/twitter-api.git",
+  "author": "ShahabAthar25 <shahabathar25@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "mongoose": "^7.4.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
