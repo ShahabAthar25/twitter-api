@@ -1,4 +1,9 @@
+const { registerValidation } = require("../utils/Validation");
+
 const register = async (req, res) => {
+  const { error } = registerValidation(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
   try {
     res.json({ message: "Hello World" });
   } catch (error) {
