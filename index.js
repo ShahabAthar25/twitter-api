@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+const AuthRoute = require("./routes/Auth");
+
 require("./utils/MongoDB");
 
 const app = express();
@@ -20,6 +22,8 @@ app.use(
     exposedHeaders: "Authorization",
   })
 );
+
+app.use("/auth", AuthRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
