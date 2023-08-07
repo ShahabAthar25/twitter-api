@@ -5,6 +5,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 
 const AuthRoute = require("./routes/Auth");
+const UserRoute = require("./routes/User");
 
 require("./utils/MongoDB");
 
@@ -24,6 +25,7 @@ app.use(
 );
 
 app.use("/auth", AuthRoute);
+app.use("/users", UserRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -10,3 +10,27 @@ module.exports.registerValidation = (data) => {
 
   return schema.validate(data);
 };
+
+module.exports.loginValidation = (data) => {
+  const schema = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};
+
+module.exports.updateUserValidation = (data) => {
+  const schema = Joi.object({
+    username: Joi.string().required(),
+    email: Joi.string().required(),
+    recoveryEmail: Joi.string().required(),
+    password: Joi.string().required(),
+    profilePic: Joi.string().required(),
+    bannerPic: Joi.string().required(),
+    bio: Joi.string().required(),
+    website: Joi.string().required(),
+  });
+
+  return schema.validate(data);
+};

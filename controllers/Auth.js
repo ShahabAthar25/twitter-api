@@ -1,11 +1,16 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
-const { registerValidation } = require("../utils/Validation");
+const { registerValidation, loginValidation } = require("../utils/Validation");
 const User = require("../models/User");
+const generateAccessToken = require("../utils/generateAccessToken");
+
+dotenv.config();
 
 const register = async (req, res) => {
   const { error } = registerValidation(req.body);
-  if (error) return res.status(400).json({ message: error.details[0].message });
+  if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
     const userExist = await User.findOne({ username: req.body.username });
@@ -23,15 +28,82 @@ const register = async (req, res) => {
 
     await user.save();
 
-    res.json({ message: "User successfully created." });
+    const payload = {
+      _id: user._id,
+      username: user.username,
+    };
+
+    const accessToken = generateAccessToken(payload);
+    console.log(accessToken);
+
+    const refreshToken = jwt.sign(user.toJSON(), process.env.PUBLIC_KEY);
+
+    res.json({
+      message: {
+        user: {
+          id: user._id,
+          email: user.email,
+          profilePic: user.profilePic,
+          bannerPic: user.bannerPic,
+          bio: user.bio,
+          website: user.website,
+          bookmarkes: user.bookmarkes,
+          followers: user.followers.length,
+          following: user.following.length,
+        },
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 const login = async (req, res) => {
+  const { error } = loginValidation(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
   try {
-    res.json({ message: "Hello World" });
+    const user = await User.findOne({ username: req.body.username });
+    if (!user) return res.status(404).json({ error: "Invalid username" });
+
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (!validPassword) {
+      return res.status(400).json({ error: "Invalid password" });
+    }
+
+    const payload = {
+      _id: user._id,
+      username: user.username,
+    };
+
+    const accessToken = generateAccessToken(payload);
+
+    const refreshToken = jwt.sign(user.toJSON(), process.env.PUBLIC_KEY);
+    await refreshToken.save();
+
+    res.json({
+      message: {
+        user: {
+          id: user._id,
+          email: user.email,
+          profilePic: user.profilePic,
+          bannerPic: user.bannerPic,
+          bio: user.bio,
+          website: user.website,
+          bookmarkes: user.bookmarkes,
+          followers: user.followers.length,
+          following: user.following.length,
+        },
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error });
   }

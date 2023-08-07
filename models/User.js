@@ -24,11 +24,11 @@ const userSchema = mongoose.Schema({
     require: true,
     min: 8,
   },
-  bannerPic: {
+  profilePic: {
     type: String,
     default: "",
   },
-  profilePic: {
+  bannerPic: {
     type: String,
     default: "",
   },
@@ -40,7 +40,15 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "",
   },
-  bookmarked: {
+  bookmarkes: {
+    type: Array,
+    default: [],
+  },
+  followers: {
+    type: Array,
+    default: [],
+  },
+  following: {
     type: Array,
     default: [],
   },
