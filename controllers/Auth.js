@@ -85,7 +85,6 @@ const login = async (req, res) => {
     const accessToken = generateAccessToken(payload);
 
     const refreshToken = jwt.sign(user.toJSON(), process.env.PUBLIC_KEY);
-    await refreshToken.save();
 
     res.json({
       message: {
