@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 const { registerValidation, loginValidation } = require("../utils/Validation");
 const User = require("../models/User");
+const RefreshToken = require("../models/RefreshToken");
 const generateAccessToken = require("../utils/generateAccessToken");
 
 dotenv.config();
@@ -34,9 +35,15 @@ const register = async (req, res) => {
     };
 
     const accessToken = generateAccessToken(payload);
-    console.log(accessToken);
 
-    const refreshToken = jwt.sign(user.toJSON(), process.env.PUBLIC_KEY);
+    const refreshToken = jwt.sign(payload, process.env.PUBLIC_KEY, {
+      expiresIn: "10d",
+    });
+
+    const newRefreshToken = await RefreshToken({
+      refreshToken,
+    });
+    await newRefreshToken.save();
 
     res.json({
       message: {
@@ -56,6 +63,7 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
   }
@@ -84,7 +92,14 @@ const login = async (req, res) => {
 
     const accessToken = generateAccessToken(payload);
 
-    const refreshToken = jwt.sign(user.toJSON(), process.env.PUBLIC_KEY);
+    const refreshToken = jwt.sign(payload, process.env.PUBLIC_KEY, {
+      expiresIn: "10d",
+    });
+
+    const newRefreshToken = await RefreshToken({
+      refreshToken,
+    });
+    await newRefreshToken.save();
 
     res.json({
       message: {
@@ -104,15 +119,57 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 const refresh = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const refreshToken = await RefreshToken.findOne({
+      refreshToken: req.body.refreshToken,
+    });
+    if (!refreshToken) {
+      return res.status(403).json({ error: "Refresh token is invalid" });
+    }
+
+    jwt.verify(
+      req.body.refreshToken,
+      process.env.PUBLIC_KEY,
+      async (err, user) => {
+        if (err) {
+          await RefreshToken.deleteOne({ refreshToken: req.body.refreshToken });
+          return res.status(403).json({ error: "Refresh token has expired" });
+        }
+
+        const payload = {
+          _id: user._id,
+          username: user.username,
+        };
+
+        const accessToken = generateAccessToken(payload);
+        const refreshToken = jwt.sign(payload, process.env.PUBLIC_KEY, {
+          expiresIn: "10d",
+        });
+
+        const newRefreshToken = await RefreshToken({
+          refreshToken,
+        });
+        await newRefreshToken.save();
+
+        await RefreshToken.deleteOne({ refreshToken: req.body.refreshToken });
+
+        return res.json({
+          message: {
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          },
+        });
+      }
+    );
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -120,7 +177,8 @@ const logout = async (req, res) => {
   try {
     res.json({ message: "Hello World" });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -128,7 +186,8 @@ const forgot = async (req, res) => {
   try {
     res.json({ message: "Hello World" });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
