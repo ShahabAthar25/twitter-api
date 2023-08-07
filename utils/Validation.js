@@ -22,14 +22,14 @@ module.exports.loginValidation = (data) => {
 
 module.exports.updateUserValidation = (data) => {
   const schema = Joi.object({
-    username: Joi.string().required(),
-    email: Joi.string().required(),
-    recoveryEmail: Joi.string().required(),
-    password: Joi.string().required(),
-    profilePic: Joi.string().required(),
-    bannerPic: Joi.string().required(),
-    bio: Joi.string().required(),
-    website: Joi.string().required(),
+    username: Joi.string(),
+    email: Joi.string(),
+    recoveryEmail: Joi.string(),
+    password: Joi.string(),
+    profilePic: Joi.string(),
+    bannerPic: Joi.string(),
+    bio: Joi.string(),
+    website: Joi.string(),
   });
 
   return schema.validate(data);

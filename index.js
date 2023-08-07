@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
+const authentication = require("./middlewares/authentication");
 const AuthRoute = require("./routes/Auth");
 const UserRoute = require("./routes/User");
 
@@ -25,6 +26,9 @@ app.use(
 );
 
 app.use("/auth", AuthRoute);
+
+app.use(authentication);
+
 app.use("/users", UserRoute);
 
 app.listen(PORT, () => {
