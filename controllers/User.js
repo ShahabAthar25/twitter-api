@@ -2,12 +2,53 @@ const bcrypt = require("bcrypt");
 
 const User = require("../models/User");
 const { updateUserValidation } = require("../utils/Validation");
+const RefreshToken = require("../models/RefreshToken");
 
-const getUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
 
-    res.json({ message: user });
+    const bookmarks = [];
+
+    res.json({
+      message: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        profilePic: user.profilePic,
+        bannerPic: user.bannerPic,
+        bio: user.bio,
+        website: user.website,
+        bookmarks,
+        following: user.following.length,
+        followers: user.followers.length,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    const bookmarks = [];
+
+    res.json({
+      message: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        profilePic: user.profilePic,
+        bannerPic: user.bannerPic,
+        bio: user.bio,
+        website: user.website,
+        bookmarks,
+        following: user.following.length,
+        followers: user.followers.length,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -57,7 +98,10 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    await User.deleteOne({ _id: req.user._id });
+    await RefreshToken.deleteMany({ user: req.user._id });
+
+    res.json({ message: "User successfully deleted" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -80,6 +124,7 @@ const unfollow = async (req, res) => {
 };
 
 module.exports = {
+  getCurrentUser,
   getUser,
   updateUser,
   deleteUser,

@@ -40,8 +40,9 @@ const register = async (req, res) => {
       expiresIn: "10d",
     });
 
-    const newRefreshToken = await RefreshToken({
+    const newRefreshToken = new RefreshToken({
       refreshToken,
+      user: user._id,
     });
     await newRefreshToken.save();
 
@@ -96,8 +97,9 @@ const login = async (req, res) => {
       expiresIn: "10d",
     });
 
-    const newRefreshToken = await RefreshToken({
+    const newRefreshToken = new RefreshToken({
       refreshToken,
+      user: user._id,
     });
     await newRefreshToken.save();
 
@@ -152,8 +154,9 @@ const refresh = async (req, res) => {
           expiresIn: "10d",
         });
 
-        const newRefreshToken = await RefreshToken({
+        const newRefreshToken = new RefreshToken({
           refreshToken,
+          user: user._id,
         });
         await newRefreshToken.save();
 
