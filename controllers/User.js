@@ -115,19 +115,10 @@ const follow = async (req, res) => {
   }
 };
 
-const unfollow = async (req, res) => {
-  try {
-    res.json({ message: "Hello World" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 module.exports = {
   getCurrentUser,
   getUser,
   updateUser,
   deleteUser,
   follow,
-  unfollow,
 };
