@@ -175,7 +175,17 @@ const refresh = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const refreshToken = await RefreshToken.findOne({
+      refreshToken: req.body.refreshToken,
+    });
+
+    if (!refreshToken) {
+      res.status(400).json({ message: "User seems to be already logged out" });
+    }
+
+    refreshToken.deleteOne();
+
+    res.json({ message: "User successfully logged out" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
