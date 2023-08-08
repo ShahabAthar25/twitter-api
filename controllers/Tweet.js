@@ -75,6 +75,7 @@ const updateTweet = async (req, res) => {
         .status(401)
         .json({ error: "You are not the creator of this tweet" });
     }
+
     await tweet.updateOne(req.body);
 
     res.json({ message: "Tweet has been updated" });
@@ -85,7 +86,16 @@ const updateTweet = async (req, res) => {
 
 const deleteTweet = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const tweet = await Tweet.findById(req.params.id);
+    if (tweet.createdBy !== req.user._id) {
+      return res
+        .status(401)
+        .json({ error: "You are not the creator of this tweet" });
+    }
+
+    await tweet.deleteOne();
+
+    res.json({ messgae: "Tweet has been successfully deleted" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
