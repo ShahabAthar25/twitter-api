@@ -44,6 +44,7 @@ const register = async (req, res) => {
     const newRefreshToken = new RefreshToken({
       refreshToken,
       user: user._id,
+      name: user.name,
     });
     await newRefreshToken.save();
 

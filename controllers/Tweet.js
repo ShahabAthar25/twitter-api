@@ -11,7 +11,20 @@ const recommendations = async (req, res) => {
 
 const getTweet = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const tweet = await Tweet.findOne({ _id: req.params.id });
+
+    res.json({
+      message: {
+        id: tweet._id,
+        createdBy: tweet.createdBy,
+        username: tweet.username,
+        name: tweet.name,
+        text: tweet.text,
+        media: tweet.media,
+        createdAt: tweet.createdAt,
+        replies: tweet.replies,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -30,14 +43,18 @@ const createTweet = async (req, res) => {
     });
 
     newTweet.save();
+    console.log(newTweet.name, req.user.name);
 
     res.json({
       message: {
+        id: newTweet._id,
         createdBy: newTweet.createdBy,
         username: newTweet.username,
         name: newTweet.name,
         text: newTweet.text,
         media: newTweet.media,
+        createdAt: newTweet.createdAt,
+        replies: newTweet.replies,
       },
     });
   } catch (error) {
