@@ -64,3 +64,17 @@ module.exports.updateTweetValidation = (data) => {
 
   return schema.validate(data);
 };
+
+module.exports.replyValidation = (data) => {
+  const schema = Joi.object({
+    text: Joi.string().max(140),
+    file: Joi.object({
+      mimetype: Joi.string().valid("image/jpeg", "image/png").required(),
+      size: Joi.number()
+        .max(5 * 1024 * 1024)
+        .required(),
+    }),
+  }).or("text", "file");
+
+  return schema.validate(data);
+};

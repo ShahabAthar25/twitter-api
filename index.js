@@ -8,6 +8,7 @@ const authentication = require("./middlewares/authentication");
 const AuthRoute = require("./routes/Auth");
 const UserRoute = require("./routes/User");
 const TweetRoute = require("./routes/Tweet");
+const ReplyRoute = require("./routes/Reply");
 
 require("./utils/MongoDB");
 
@@ -32,6 +33,7 @@ app.use(authentication);
 
 app.use("/users", UserRoute);
 app.use("/tweets", TweetRoute);
+app.use("/tweets/replies", ReplyRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
