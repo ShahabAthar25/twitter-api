@@ -1,11 +1,11 @@
 const router = require("express").Router();
 
-const controller = require("../controllers/Tweet");
+const controller = require("../controllers/Reply");
 
-router.get("/:id", controller.getTweet);
-router.post("/", controller.createTweet);
-router.put("/:id", controller.updateTweet);
-router.delete("/:id", controller.deleteTweet);
-router.put("/:id/like", controller.likeTweet);
+router.get("/:id", controller.getReply);
+router.post("/", controller.createReply);
+router.put("/:id", controller.updateReply);
+router.delete("/:id", controller.deleteReply);
+router.put("/:id/like", controller.likeReply);
 
 module.exports = router;
