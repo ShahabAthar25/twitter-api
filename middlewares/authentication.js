@@ -10,7 +10,6 @@ module.exports = function (req, res, next) {
 
   jwt.verify(token, process.env.PRIVATE_KEY, async (err, user) => {
     if (err) {
-      console.log(err);
       return res.status(403).json({ error: "Access token has expired" });
     }
 

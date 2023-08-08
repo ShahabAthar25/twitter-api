@@ -1,5 +1,8 @@
 const Tweet = require("../models/Tweet");
-const { createTweetValidation } = require("../utils/Validation");
+const {
+  createTweetValidation,
+  updateTweetValidation,
+} = require("../utils/Validation");
 
 const recommendations = async (req, res) => {
   try {
@@ -43,7 +46,6 @@ const createTweet = async (req, res) => {
     });
 
     newTweet.save();
-    console.log(newTweet.name, req.user.name);
 
     res.json({
       message: {
@@ -63,8 +65,19 @@ const createTweet = async (req, res) => {
 };
 
 const updateTweet = async (req, res) => {
+  const { error } = updateTweetValidation(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
   try {
-    res.json({ message: "Hello World" });
+    const tweet = await Tweet.findById(req.params.id);
+    if (tweet.createdBy !== req.user._id) {
+      return res
+        .status(401)
+        .json({ error: "You are not the creator of this tweet" });
+    }
+    await tweet.updateOne(req.body);
+
+    res.json({ message: "Tweet has been updated" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
