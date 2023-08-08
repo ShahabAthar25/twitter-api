@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const authentication = require("./middlewares/authentication");
 const AuthRoute = require("./routes/Auth");
 const UserRoute = require("./routes/User");
+const TweetRoute = require("./routes/Tweet");
 
 require("./utils/MongoDB");
 
@@ -30,6 +31,7 @@ app.use("/auth", AuthRoute);
 app.use(authentication);
 
 app.use("/users", UserRoute);
+app.use("/tweets", TweetRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
