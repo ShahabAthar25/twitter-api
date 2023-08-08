@@ -109,7 +109,42 @@ const deleteUser = async (req, res) => {
 
 const follow = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const user = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!user.followers.includes(req.user._id)) {
+      await user.updateOne({
+        $addToSet: {
+          followers: req.user._id,
+        },
+      });
+
+      await currentUser.updateOne({
+        $addToSet: {
+          following: req.user._id,
+        },
+      });
+
+      res.json({ message: `Successfully followed ${user.username}` });
+    } else {
+      await user.updateOne({
+        $pull: {
+          followers: req.user._id,
+        },
+      });
+
+      await currentUser.updateOne({
+        $pull: {
+          following: req.user._id,
+        },
+      });
+
+      res.json({ message: `Successfully unfollowed ${user.username}` });
+    }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

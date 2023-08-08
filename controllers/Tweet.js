@@ -72,6 +72,7 @@ const updateTweet = async (req, res) => {
 
   try {
     const tweet = await Tweet.findById(req.params.id);
+
     if (tweet.createdBy !== req.user._id) {
       return res
         .status(401)
@@ -89,6 +90,7 @@ const updateTweet = async (req, res) => {
 const deleteTweet = async (req, res) => {
   try {
     const tweet = await Tweet.findById(req.params.id);
+
     if (tweet.createdBy !== req.user._id) {
       return res
         .status(401)
