@@ -26,6 +26,7 @@ const getTweet = async (req, res) => {
         media: tweet.media,
         createdAt: tweet.createdAt,
         replies: tweet.replies,
+        likes: tweet.likes.length,
       },
     });
   } catch (error) {
@@ -57,6 +58,7 @@ const createTweet = async (req, res) => {
         media: newTweet.media,
         createdAt: newTweet.createdAt,
         replies: newTweet.replies,
+        likes: newTweet.likes,
       },
     });
   } catch (error) {
@@ -103,7 +105,29 @@ const deleteTweet = async (req, res) => {
 
 const likeTweet = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const tweet = await Tweet.findById(req.params.id);
+
+    if (tweet.createdBy === req.user._id) {
+      return res.status(400).json({ error: "You cannot like your own tweet" });
+    }
+
+    if (!tweet.likes.includes(req.user._id)) {
+      await tweet.updateOne({
+        $addToSet: {
+          likes: req.user._id,
+        },
+      });
+
+      res.json({ message: "The tweet has been liked" });
+    } else {
+      await tweet.updateOne({
+        $pull: {
+          likes: req.user._id,
+        },
+      });
+
+      res.json({ message: "The tweet has been unliked" });
+    }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
