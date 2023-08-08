@@ -13,7 +13,7 @@ const RepliesSchema = mongoose.Schema({
     type: String,
     require: true,
   },
-  post: {
+  parent: {
     type: String,
     require: true,
   },
