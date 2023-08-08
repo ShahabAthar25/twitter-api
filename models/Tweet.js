@@ -5,9 +5,18 @@ const TweetSchema = mongoose.Schema({
     type: String,
     require: true,
   },
+  username: {
+    type: String,
+    require: true,
+  },
+  name: {
+    type: String,
+    require: true,
+  },
   text: {
     type: String,
     default: "",
+    max: 140,
   },
   media: {
     type: String,
@@ -23,4 +32,4 @@ const TweetSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("RefreshToken", TweetSchema);
+module.exports = mongoose.model("Tweet", TweetSchema);

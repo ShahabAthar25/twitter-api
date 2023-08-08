@@ -7,6 +7,6 @@ router.get("/:id", controller.getTweet);
 router.post("/", controller.createTweet);
 router.put("/", controller.updateTweet);
 router.delete("/", controller.deleteTweet);
-router.put("/forgot", controller.likeTweet);
+router.put("/like", controller.likeTweet);
 
 module.exports = router;

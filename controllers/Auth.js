@@ -32,6 +32,7 @@ const register = async (req, res) => {
     const payload = {
       _id: user._id,
       username: user.username,
+      name: user.name,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -89,6 +90,7 @@ const login = async (req, res) => {
     const payload = {
       _id: user._id,
       username: user.username,
+      name: user.name,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -147,6 +149,7 @@ const refresh = async (req, res) => {
         const payload = {
           _id: user._id,
           username: user.username,
+          name: user.name,
         };
 
         const accessToken = generateAccessToken(payload);
