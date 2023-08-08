@@ -73,6 +73,15 @@ const updateTweet = async (req, res) => {
   try {
     const tweet = await Tweet.findById(req.params.id);
 
+    const currentDate = new Date();
+    const timeDifference = currentDate - tweet.createdAt;
+
+    if (timeDifference >= 15 * 60 * 1000) {
+      return res
+        .status(400)
+        .json({ error: "Cannot edit tweet after 15 minutes" });
+    }
+
     if (tweet.createdBy !== req.user._id) {
       return res
         .status(401)
@@ -83,6 +92,7 @@ const updateTweet = async (req, res) => {
 
     res.json({ message: "Tweet has been updated" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
