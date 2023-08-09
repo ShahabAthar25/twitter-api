@@ -68,6 +68,12 @@ const updateReply = async (req, res) => {
         .json({ error: "Cannot edit reply after 15 minutes" });
     }
 
+    if (reply.createdBy !== req.user._id) {
+      return res
+        .status(401)
+        .json({ error: "You are not the creator of this reply" });
+    }
+
     await reply.updateOne(req.body);
 
     res.json({ message: "Reply has been updated" });
@@ -79,7 +85,17 @@ const updateReply = async (req, res) => {
 
 const deleteReply = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const reply = await Reply.findById(req.params.id);
+
+    if (reply.createdBy !== req.user._id) {
+      return res
+        .status(401)
+        .json({ error: "You are not the creator of this reply" });
+    }
+
+    await reply.deleteOne();
+
+    res.json({ message: "Reply has been deleted" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -88,7 +104,29 @@ const deleteReply = async (req, res) => {
 
 const likeReply = async (req, res) => {
   try {
-    res.json({ message: "Hello World" });
+    const reply = await Reply.findById(req.params.id);
+
+    if (reply.createdBy === req.user._id) {
+      return res.status(400).json({ error: "You cannot like your own reply" });
+    }
+
+    if (!reply.likes.includes(req.user._id)) {
+      await reply.updateOne({
+        $addToSet: {
+          likes: req.user._id,
+        },
+      });
+
+      res.json({ message: "The tweet has been liked" });
+    } else {
+      await reply.updateOne({
+        $pull: {
+          likes: req.user._id,
+        },
+      });
+
+      res.json({ message: "The tweet has been unliked" });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
