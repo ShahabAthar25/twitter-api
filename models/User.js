@@ -46,7 +46,7 @@ const userSchema = mongoose.Schema({
     type: String,
     default: "",
   },
-  bookmarkes: {
+  bookmarks: {
     type: Array,
     default: [],
   },

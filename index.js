@@ -10,6 +10,7 @@ const UserRoute = require("./routes/User");
 const TweetRoute = require("./routes/Tweet");
 const ReplyRoute = require("./routes/Reply");
 const DiscusssionRoute = require("./routes/Discussion");
+const BookmarkRoute = require("./routes/Bookmark");
 
 require("./utils/MongoDB");
 
@@ -36,6 +37,7 @@ app.use("/users", UserRoute);
 app.use("/tweets", TweetRoute);
 app.use("/tweets/replies", ReplyRoute);
 app.use("/discussion", DiscusssionRoute);
+app.use("/bookmarks", BookmarkRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
