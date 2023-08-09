@@ -53,8 +53,24 @@ const createReply = async (req, res) => {
 };
 
 const updateReply = async (req, res) => {
+  const { error } = replyValidation(req.body);
+  if (error) return res.status(400).json({ error: error.details[0].message });
+
   try {
-    res.json({ message: "Hello World" });
+    const reply = await Reply.findById(req.params.id);
+
+    const currentDate = new Date();
+    const timeDifference = currentDate - reply.createdAt;
+
+    if (timeDifference >= 15 * 60 * 1000) {
+      return res
+        .status(400)
+        .json({ error: "Cannot edit reply after 15 minutes" });
+    }
+
+    await reply.updateOne(req.body);
+
+    res.json({ message: "Reply has been updated" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
