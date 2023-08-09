@@ -30,6 +30,10 @@ const TweetSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+  trends: {
+    type: Array,
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

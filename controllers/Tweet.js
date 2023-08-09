@@ -1,8 +1,10 @@
 const Tweet = require("../models/Tweet");
+const User = require("../models/User");
 const {
   createTweetValidation,
   updateTweetValidation,
 } = require("../utils/Validation");
+const extractInfo = require("../utils/extractInfo");
 
 const recommendations = async (req, res) => {
   try {
@@ -46,21 +48,40 @@ const createTweet = async (req, res) => {
       text: req.body.text,
     });
 
+    const { hashtags, mentions } = extractInfo(newTweet.text);
+
+    const mentionsPromise = mentions.map(async (username) => {
+      await User.findOneAndUpdate(
+        { username: username },
+        {
+          $push: {
+            notifications: {
+              text: `You have been mentioned by ${newTweet.name} (@${newTweet.username})`,
+              post: newTweet._id,
+            },
+          },
+        }
+      );
+    });
+
+    await Promise.all(mentionsPromise);
+
     newTweet.save();
 
-    res.json({
-      message: {
-        id: newTweet._id,
-        createdBy: newTweet.createdBy,
-        username: newTweet.username,
-        name: newTweet.name,
-        text: newTweet.text,
-        media: newTweet.media,
-        createdAt: newTweet.createdAt,
-        replies: newTweet.replies,
-        likes: newTweet.likes,
-      },
-    });
+    if (newTweet.text)
+      res.json({
+        message: {
+          id: newTweet._id,
+          createdBy: newTweet.createdBy,
+          username: newTweet.username,
+          name: newTweet.name,
+          text: newTweet.text,
+          media: newTweet.media,
+          createdAt: newTweet.createdAt,
+          replies: newTweet.replies,
+          likes: newTweet.likes,
+        },
+      });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

@@ -58,6 +58,10 @@ const userSchema = mongoose.Schema({
     type: Array,
     default: [],
   },
+  notifications: {
+    type: Array,
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
