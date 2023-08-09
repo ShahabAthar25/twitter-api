@@ -5,23 +5,22 @@ const viewBookmarks = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    const bookmarks = [];
-
-    user.bookmarks.forEach(async (id) => {
+    const bookmarksPromise = user.bookmarks.map(async (id) => {
       const tweet = await Tweet.findById(id);
 
-      bookmarks.push({
+      return {
         id: tweet._id,
         createdBy: tweet.createdBy,
         username: tweet.username,
         name: tweet.name,
         text: tweet.text,
         media: tweet.media,
-        createdAt: tweet.createdAt,
-        replies: tweet.replies,
         likes: tweet.likes.length,
-      });
+        createdAt: tweet.createdAt,
+      };
     });
+
+    const bookmarks = await Promise.all(bookmarksPromise);
 
     res.json({ message: bookmarks });
   } catch (error) {
