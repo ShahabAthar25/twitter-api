@@ -2,11 +2,13 @@ module.exports = (text) => {
   const hashtagsRegex = /#\w+/g;
   const mentionsRegex = /@\w+/g;
 
-  const hashtags = text.match(hashtagsRegex);
-  const mentions = text.match(mentionsRegex);
+  const hashtags = (text.match(hashtagsRegex) || []).map((tag) => tag.slice(1));
+  const mentions = (text.match(mentionsRegex) || []).map((mention) =>
+    mention.slice(1)
+  );
 
   return {
-    hashtags: hashtags || [],
-    mentions: mentions || [],
+    hashtags: hashtags,
+    mentions: mentions,
   };
 };
