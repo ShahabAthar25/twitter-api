@@ -52,7 +52,6 @@ const createTweet = async (req, res) => {
 
     const mentionsPromise = mentions.map(async (username) => {
       const user = await User.findOne({ username: username });
-      console.log(username);
       if (user) {
         await user.updateOne({
           $push: {
