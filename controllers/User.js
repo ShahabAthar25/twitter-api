@@ -8,8 +8,6 @@ const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
 
-    const bookmarks = [];
-
     res.json({
       message: {
         id: user._id,
@@ -19,6 +17,7 @@ const getCurrentUser = async (req, res) => {
         bannerPic: user.bannerPic,
         bio: user.bio,
         website: user.website,
+        notifications: user.notifications,
         following: user.following.length,
         followers: user.followers.length,
       },
@@ -32,8 +31,6 @@ const getUser = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
 
-    const bookmarks = [];
-
     res.json({
       message: {
         id: user._id,
@@ -43,6 +40,7 @@ const getUser = async (req, res) => {
         bannerPic: user.bannerPic,
         bio: user.bio,
         website: user.website,
+        notifications: user.notifications,
         following: user.following.length,
         followers: user.followers.length,
       },
@@ -127,6 +125,15 @@ const follow = async (req, res) => {
         },
       });
 
+      await user.updateOne({
+        $push: {
+          notifications: {
+            text: `${currentUser.name} (@${currentUser.username}) followed you!`,
+            user: currentUser._id,
+          },
+        },
+      });
+
       res.json({ message: `Successfully followed ${user.username}` });
     } else {
       await user.updateOne({
@@ -141,9 +148,19 @@ const follow = async (req, res) => {
         },
       });
 
+      await user.updateOne({
+        $push: {
+          notifications: {
+            text: `${currentUser.name} (@${currentUser.username}) unfollowed you!`,
+            user: user._id,
+          },
+        },
+      });
+
       res.json({ message: `Successfully unfollowed ${user.username}` });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

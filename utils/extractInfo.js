@@ -1,4 +1,4 @@
-function extractInfo(text) {
+module.exports = (text) => {
   const hashtagsRegex = /#\w+/g;
   const mentionsRegex = /@\w+/g;
 
@@ -9,4 +9,4 @@ function extractInfo(text) {
     hashtags: hashtags || [],
     mentions: mentions || [],
   };
-}
+};

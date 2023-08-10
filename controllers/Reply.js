@@ -117,7 +117,16 @@ const likeReply = async (req, res) => {
         },
       });
 
-      res.json({ message: "The tweet has been liked" });
+      await User.findOneAndUpdate(reply.createdBy, {
+        $push: {
+          notifications: {
+            text: `${req.user.name} (@${req.user.username}) liked your reply`,
+            reply: reply._id,
+          },
+        },
+      });
+
+      res.json({ message: "The reply has been liked" });
     } else {
       await reply.updateOne({
         $pull: {
@@ -125,7 +134,16 @@ const likeReply = async (req, res) => {
         },
       });
 
-      res.json({ message: "The tweet has been unliked" });
+      await User.findOneAndUpdate(reply.createdBy, {
+        $push: {
+          notifications: {
+            text: `${req.user.name} (@${req.user.username}) unliked your reply`,
+            reply: reply._id,
+          },
+        },
+      });
+
+      res.json({ message: "The reply has been unliked" });
     }
   } catch (error) {
     console.log(error);

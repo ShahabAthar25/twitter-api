@@ -51,17 +51,17 @@ const createTweet = async (req, res) => {
     const { hashtags, mentions } = extractInfo(newTweet.text);
 
     const mentionsPromise = mentions.map(async (username) => {
-      await User.findOneAndUpdate(
-        { username: username },
-        {
+      const user = await User.findOne({ username: username });
+      if (user) {
+        await user.updateOne({
           $push: {
             notifications: {
               text: `You have been mentioned by ${newTweet.name} (@${newTweet.username})`,
               post: newTweet._id,
             },
           },
-        }
-      );
+        });
+      }
     });
 
     await Promise.all(mentionsPromise);
@@ -83,6 +83,7 @@ const createTweet = async (req, res) => {
         },
       });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -151,11 +152,29 @@ const likeTweet = async (req, res) => {
         },
       });
 
+      await User.findOneAndUpdate(tweet.createdBy, {
+        $push: {
+          notifications: {
+            text: `${req.user.name} (@${req.user.username}) liked your tweet`,
+            post: tweet._id,
+          },
+        },
+      });
+
       res.json({ message: "The tweet has been liked" });
     } else {
       await tweet.updateOne({
         $pull: {
           likes: req.user._id,
+        },
+      });
+
+      await User.findOneAndUpdate(tweet.createdBy, {
+        $push: {
+          notifications: {
+            text: `${req.user.name} (@${req.user.username}) unliked your tweet`,
+            post: tweet._id,
+          },
         },
       });
 
