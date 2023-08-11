@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema({
+const HashTagSchema = mongoose.Schema({
   name: {
     type: String,
     require: true,
   },
 });
 
-module.exports = mongoose.model("RefreshToken", Schema);
+module.exports = mongoose.model("HashTag", HashTagSchema);

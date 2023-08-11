@@ -8,7 +8,7 @@ module.exports = (text) => {
   );
 
   return {
-    hashtags: hashtags,
-    mentions: mentions,
+    hashTags: hashtags || [],
+    mentions: mentions || [],
   };
 };

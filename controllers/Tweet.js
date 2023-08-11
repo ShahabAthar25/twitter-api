@@ -1,5 +1,6 @@
 const Tweet = require("../models/Tweet");
 const User = require("../models/User");
+const HashTag = require("../models/HashTag");
 const {
   createTweetValidation,
   updateTweetValidation,
@@ -26,6 +27,7 @@ const getTweet = async (req, res) => {
         name: tweet.name,
         text: tweet.text,
         media: tweet.media,
+        trends: tweet.trends,
         createdAt: tweet.createdAt,
         replies: tweet.replies,
         likes: tweet.likes.length,
@@ -41,14 +43,29 @@ const createTweet = async (req, res) => {
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   try {
+    const { hashTags, mentions } = extractInfo(req.body.text);
+
     const newTweet = new Tweet({
       createdBy: req.user._id,
       username: req.user.username,
       name: req.user.name,
       text: req.body.text,
+      trends: hashTags,
     });
 
-    const { hashtags, mentions } = extractInfo(newTweet.text);
+    const hashTagsPromise = hashTags.map(async (hashTag) => {
+      const hashTagDocument = await HashTag.findOne({ name: hashTag });
+
+      if (hashTagDocument) return;
+
+      const newHashTag = await HashTag({
+        name: hashTag,
+      });
+
+      newHashTag.save();
+    });
+
+    await Promise.all(hashTagsPromise);
 
     const mentionsPromise = mentions.map(async (username) => {
       const user = await User.findOne({ username: username });
@@ -77,6 +94,7 @@ const createTweet = async (req, res) => {
           name: newTweet.name,
           text: newTweet.text,
           media: newTweet.media,
+          trends: newTweet.trends,
           createdAt: newTweet.createdAt,
           replies: newTweet.replies,
           likes: newTweet.likes,
